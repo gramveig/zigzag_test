@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using Random = System.Random;
 
 
 namespace Alexey.ZigzagTest.Views
@@ -12,6 +13,13 @@ namespace Alexey.ZigzagTest.Views
 
         private Transform _transform;
         private List<IObserver<float>> _observers = new List<IObserver<float>>();
+        private float _shiftTotal;
+
+        enum RoadDirection
+        {
+            Forward,
+            Right
+        }
 
         private void Awake()
         {
@@ -36,13 +44,23 @@ namespace Alexey.ZigzagTest.Views
                         continue;
                     }
 
-                    InitRoadBlock(x, y);
+                    InstantiateRoadBlock(x, y);
                 }
             }
         }
 
+        public void GenerateRoadBeginning()
+        {
+            for (int i = 0; i < 10; i++)
+            {
+                AddBlocks();
+            }
+        }
+        
         public void Shift(float shift)
         {
+            _shiftTotal += shift;
+
             foreach (var observer in _observers)
             {
                 observer.Notify(shift);
@@ -54,7 +72,7 @@ namespace Alexey.ZigzagTest.Views
             _observers.Remove(observer);
         }
         
-        private void InitRoadBlock(int x, int y)
+        private void InstantiateRoadBlock(int x, int y)
         {
             var roadBlock = Instantiate(_roadBlock, new Vector3(x, 0, y), Quaternion.identity, _transform);
             AddObserver(roadBlock);
@@ -66,6 +84,58 @@ namespace Alexey.ZigzagTest.Views
             if (observer != null)
             {
                 _observers.Add(observer.Subscribe(this));
+            }
+        }
+
+        private Vector2Int GetRightmostTileCoord()
+        {
+            int rightmostBlockX = int.MaxValue;
+            int rightmostBlockY = int.MaxValue;
+
+            foreach (var observer in _observers)
+            {
+                var roadBlock = observer as RoadBlock;
+                if (roadBlock == null)
+                {
+                    continue;
+                }
+
+                var coord = roadBlock.IntCoord;
+                if (coord.x < rightmostBlockX)
+                {
+                    rightmostBlockX = coord.x;
+                }
+                
+                if (coord.y < rightmostBlockY)
+                {
+                    rightmostBlockY = coord.y;
+                }
+            }
+
+            return new Vector2Int(rightmostBlockX, rightmostBlockY);
+        }
+
+        RoadDirection GetRandomDirection()
+        {
+            return (RoadDirection)UnityEngine.Random.Range(0, 2);
+        }
+
+        public void AddBlocks()
+        {
+            var cornerTileCoord = GetRightmostTileCoord();
+            Debug.Log(cornerTileCoord);
+            var direction = GetRandomDirection();
+            if (direction == RoadDirection.Forward)
+            {
+                InstantiateRoadBlock(cornerTileCoord.x, cornerTileCoord.y - 1);
+            }
+            else if (direction == RoadDirection.Right)
+            {
+                InstantiateRoadBlock(cornerTileCoord.x - 1, cornerTileCoord.y);
+            }
+            else
+            {
+                throw new Exception("Unimplemented direction");
             }
         }
     }

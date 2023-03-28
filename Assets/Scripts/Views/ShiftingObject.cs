@@ -5,7 +5,7 @@ namespace Alexey.ZigzagTest.Views
 {
     public class ShiftingObject : MonoBehaviour, IObserver<float>
     {
-        private Transform _transform;
+        protected Transform _transform;
         private IObservable<float> _road;
 
         private void Awake()
@@ -30,7 +30,7 @@ namespace Alexey.ZigzagTest.Views
             Shift(value);
         }
 
-        private void Shift(float shift)
+        protected virtual void Shift(float shift)
         {
             Vector3 p = _transform.position;
             _transform.position = new Vector3(p.x + shift, 0, p.z + shift);

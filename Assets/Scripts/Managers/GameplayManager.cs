@@ -14,11 +14,16 @@ namespace Alexey.ZigzagTest.Managers
         private void Start()
         {
             _road.GenerateHomeYard();
+            //_road.GenerateRoadBeginning();
         }
 
         private void Update()
         {
-            _road.Shift(_speed * Time.deltaTime);
+            //_road.Shift(_speed * Time.deltaTime);
+            if (Input.GetKeyDown(KeyCode.T))
+            {
+                _road.AddBlocks();
+            }
         }
     }
 }
