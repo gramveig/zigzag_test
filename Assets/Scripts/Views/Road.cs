@@ -9,21 +9,33 @@ namespace Alexey.ZigzagTest.Views
     public class Road : MonoBehaviour, IObservable<float>
     {
         [SerializeField]
-        private GameObject _roadBlock;
+        private RoadBlock _roadBlock;
+
+        [SerializeField]
+        private CrystalMode _crystalMode;
 
         private Transform _transform;
         private List<IObserver<float>> _observers = new List<IObserver<float>>();
         private float _shiftTotal;
-        private RoadDirection _lastDirection;
+        private RoadDirection _lastDirection = RoadDirection.None;
         private int _sameDirectionBlocksCount;
+        private int _blockIdxInCluster;
+        private int _crystalIdxInCluster;
 
         private const int MaxBlocksOfSameDirection = 5;
+        private const int MaxBlocksInCluster = 5;
         
         enum RoadDirection
         {
             None,
             Forward,
             Right
+        }
+
+        enum CrystalMode
+        {
+            Random,
+            Ordered
         }
 
         private void Awake()
@@ -76,13 +88,50 @@ namespace Alexey.ZigzagTest.Views
         {
             _observers.Remove(observer);
         }
-        
-        private void InstantiateRoadBlock(int x, int y)
+
+        private RoadBlock InstantiateRoadBlock(int x, int y)
         {
             var roadBlock = Instantiate(_roadBlock, new Vector3(x, 0, y), Quaternion.identity, _transform);
-            AddObserver(roadBlock);
+            AddObserver(roadBlock.gameObject);
+
+            return roadBlock;
         }
 
+        private void InstantiateRoadBlockInCluster(int x, int y)
+        {
+            if (_blockIdxInCluster >= MaxBlocksInCluster - 1)
+            {
+                _blockIdxInCluster = 0;
+                if (_crystalMode == CrystalMode.Random)
+                {
+                    _crystalIdxInCluster = UnityEngine.Random.Range(0, MaxBlocksInCluster);
+                }
+                else if (_crystalMode == CrystalMode.Ordered)
+                {
+                    if (_crystalIdxInCluster >= MaxBlocksInCluster - 1)
+                    {
+                        _crystalIdxInCluster = 0;
+                    }
+                    else
+                    {
+                        _crystalIdxInCluster++;
+                    }
+                }
+                else
+                {
+                    throw new Exception("Unimplemented crystal mode");
+                }
+            }
+
+            var roadBlock = InstantiateRoadBlock(x, y);
+            if (_blockIdxInCluster == _crystalIdxInCluster)
+            {
+                roadBlock.ShowCrystal();
+            }
+
+            _blockIdxInCluster++;
+        }
+        
         private void AddObserver(GameObject obj)
         {
             var observer = obj.GetComponent<IObserver<float>>();
@@ -120,7 +169,7 @@ namespace Alexey.ZigzagTest.Views
             return new Vector2Int(rightmostBlockX, rightmostBlockY);
         }
 
-        RoadDirection GetRandomDirection()
+        private RoadDirection GetRandomDirection()
         {
             var direction = (RoadDirection)(UnityEngine.Random.Range(0, 2) + 1);
             if (direction == _lastDirection)
@@ -142,7 +191,7 @@ namespace Alexey.ZigzagTest.Views
             return direction;
         }
 
-        RoadDirection GetDifferentDirection(RoadDirection direction)
+        private RoadDirection GetDifferentDirection(RoadDirection direction)
         {
             if (direction == RoadDirection.Forward)
             {
@@ -159,11 +208,11 @@ namespace Alexey.ZigzagTest.Views
             var direction = GetRandomDirection();
             if (direction == RoadDirection.Forward)
             {
-                InstantiateRoadBlock(cornerTileCoord.x, cornerTileCoord.y - 1);
+                InstantiateRoadBlockInCluster(cornerTileCoord.x, cornerTileCoord.y - 1);
             }
             else if (direction == RoadDirection.Right)
             {
-                InstantiateRoadBlock(cornerTileCoord.x - 1, cornerTileCoord.y);
+                InstantiateRoadBlockInCluster(cornerTileCoord.x - 1, cornerTileCoord.y);
             }
             else
             {

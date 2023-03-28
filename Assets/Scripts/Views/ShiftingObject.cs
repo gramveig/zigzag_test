@@ -8,7 +8,7 @@ namespace Alexey.ZigzagTest.Views
         protected Transform _transform;
         private IObservable<float> _road;
 
-        private void Awake()
+        protected virtual void Awake()
         {
             _transform = transform;
         }

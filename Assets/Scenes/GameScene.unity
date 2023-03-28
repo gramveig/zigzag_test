@@ -334,6 +334,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Road
       objectReference: {fileID: 0}
+    - target: {fileID: 2750419583173574347, guid: 783b0b33aeeb8e042a7f2b2aa5278f12, type: 3}
+      propertyPath: _roadBlock
+      value: 
+      objectReference: {fileID: 7945695087945022522, guid: 39574fb9ed11bdf44896d2dd85eaed43, type: 3}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []

@@ -45,7 +45,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 417de995273c42c6abcf83f85318abd5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _roadBlock: {fileID: 8860204819907809714, guid: 39574fb9ed11bdf44896d2dd85eaed43, type: 3}
+  _roadBlock: {fileID: 7945695087945022522, guid: 39574fb9ed11bdf44896d2dd85eaed43, type: 3}
+  _crystalMode: 0
 --- !u!1001 &8554875228749430814
 PrefabInstance:
   m_ObjectHideFlags: 0

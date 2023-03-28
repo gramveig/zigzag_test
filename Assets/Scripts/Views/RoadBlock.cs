@@ -5,9 +5,19 @@ namespace Alexey.ZigzagTest.Views
 {
     public class RoadBlock : ShiftingObject
     {
+        [SerializeField]
+        private GameObject _crystal;
+        
         private float _shiftTotal;
 
         private const float DisappearThresholdUnits = 3;
+
+        protected override void Awake()
+        {
+            base.Awake();
+
+            _crystal.SetActive(false);
+        }
 
         public Vector2Int IntCoord
         {
@@ -16,6 +26,11 @@ namespace Alexey.ZigzagTest.Views
                 var p = _transform.position;
                 return new Vector2Int(Mathf.RoundToInt(p.x), Mathf.RoundToInt(p.z));
             }
+        }
+
+        public void ShowCrystal()
+        {
+            _crystal.SetActive(true);
         }
         
         protected override void Shift(float shift)
