@@ -14,6 +14,9 @@ namespace Alexey.ZigzagTest.Views
         [SerializeField]
         private CrystalMode _crystalMode;
 
+        [SerializeField]
+        private int _roadWidth = 1;
+
         private Transform _transform;
         private List<IObserver<float>> _observers = new List<IObserver<float>>();
         private float _shiftTotal;
@@ -24,6 +27,7 @@ namespace Alexey.ZigzagTest.Views
 
         private const int MaxBlocksOfSameDirection = 5;
         private const int MaxBlocksInCluster = 5;
+        private const int MaxRoadWidth = 3;
 
         private readonly Color[] _testColors = new[] { Color.white, Color.yellow, Color.red, Color.green, Color.cyan };
         private bool _debugColors = true;
@@ -43,6 +47,15 @@ namespace Alexey.ZigzagTest.Views
 
         private void Awake()
         {
+            if (_roadWidth < 0)
+            {
+                _roadWidth = 0;
+            }
+            else if (_roadWidth > MaxRoadWidth)
+            {
+                _roadWidth = MaxRoadWidth;
+            }
+            
             _transform = transform;
 
             //add observers for the road blocks already on scene
@@ -214,17 +227,20 @@ namespace Alexey.ZigzagTest.Views
             var cornerTileCoord = GetRightmostTileCoord();
             Debug.Log(cornerTileCoord);
             var direction = GetRandomDirection();
-            if (direction == RoadDirection.Forward)
+            for (int i = 0; i < _roadWidth; i++)
             {
-                InstantiateRoadBlockInCluster(cornerTileCoord.x, cornerTileCoord.y - 1);
-            }
-            else if (direction == RoadDirection.Right)
-            {
-                InstantiateRoadBlockInCluster(cornerTileCoord.x - 1, cornerTileCoord.y);
-            }
-            else
-            {
-                throw new Exception("Unimplemented direction");
+                if (direction == RoadDirection.Forward)
+                {
+                    InstantiateRoadBlockInCluster(cornerTileCoord.x + i, cornerTileCoord.y - 1);
+                }
+                else if (direction == RoadDirection.Right)
+                {
+                    InstantiateRoadBlockInCluster(cornerTileCoord.x - 1, cornerTileCoord.y + i);
+                }
+                else
+                {
+                    throw new Exception("Unimplemented direction");
+                }
             }
         }
     }
