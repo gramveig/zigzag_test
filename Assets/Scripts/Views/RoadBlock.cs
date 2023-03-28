@@ -32,6 +32,12 @@ namespace Alexey.ZigzagTest.Views
         {
             _crystal.SetActive(true);
         }
+
+        public void SetColor(Color color)
+        {
+            var renderer = GetComponent<Renderer>();
+            renderer.material.color = color;
+        }
         
         protected override void Shift(float shift)
         {

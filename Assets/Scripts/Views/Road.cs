@@ -24,7 +24,10 @@ namespace Alexey.ZigzagTest.Views
 
         private const int MaxBlocksOfSameDirection = 5;
         private const int MaxBlocksInCluster = 5;
-        
+
+        private readonly Color[] _testColors = new[] { Color.white, Color.yellow, Color.red, Color.green, Color.cyan };
+        private bool _debugColors = true;
+
         enum RoadDirection
         {
             None,
@@ -99,7 +102,7 @@ namespace Alexey.ZigzagTest.Views
 
         private void InstantiateRoadBlockInCluster(int x, int y)
         {
-            if (_blockIdxInCluster >= MaxBlocksInCluster - 1)
+            if (_blockIdxInCluster >= MaxBlocksInCluster)
             {
                 _blockIdxInCluster = 0;
                 if (_crystalMode == CrystalMode.Random)
@@ -108,7 +111,7 @@ namespace Alexey.ZigzagTest.Views
                 }
                 else if (_crystalMode == CrystalMode.Ordered)
                 {
-                    if (_crystalIdxInCluster >= MaxBlocksInCluster - 1)
+                    if (_crystalIdxInCluster >= MaxBlocksInCluster)
                     {
                         _crystalIdxInCluster = 0;
                     }
@@ -129,6 +132,11 @@ namespace Alexey.ZigzagTest.Views
                 roadBlock.ShowCrystal();
             }
 
+            if (_debugColors)
+            {
+                roadBlock.SetColor(_testColors[_blockIdxInCluster]);
+            }
+            
             _blockIdxInCluster++;
         }
         
