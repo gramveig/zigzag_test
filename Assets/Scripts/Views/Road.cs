@@ -14,9 +14,14 @@ namespace Alexey.ZigzagTest.Views
         private Transform _transform;
         private List<IObserver<float>> _observers = new List<IObserver<float>>();
         private float _shiftTotal;
+        private RoadDirection _lastDirection;
+        private int _sameDirectionBlocksCount;
 
+        private const int MaxBlocksOfSameDirection = 5;
+        
         enum RoadDirection
         {
+            None,
             Forward,
             Right
         }
@@ -117,9 +122,36 @@ namespace Alexey.ZigzagTest.Views
 
         RoadDirection GetRandomDirection()
         {
-            return (RoadDirection)UnityEngine.Random.Range(0, 2);
+            var direction = (RoadDirection)(UnityEngine.Random.Range(0, 2) + 1);
+            if (direction == _lastDirection)
+            {
+                _sameDirectionBlocksCount++;
+                if (_sameDirectionBlocksCount >= MaxBlocksOfSameDirection)
+                {
+                    direction = GetDifferentDirection(direction);
+                    _sameDirectionBlocksCount = 0;
+                    _lastDirection = direction;
+                }
+            }
+            else
+            {
+                _sameDirectionBlocksCount = 0;
+                _lastDirection = direction;
+            }
+
+            return direction;
         }
 
+        RoadDirection GetDifferentDirection(RoadDirection direction)
+        {
+            if (direction == RoadDirection.Forward)
+            {
+                return RoadDirection.Right;
+            }
+
+            return RoadDirection.Forward;
+        }
+        
         public void AddBlocks()
         {
             var cornerTileCoord = GetRightmostTileCoord();
