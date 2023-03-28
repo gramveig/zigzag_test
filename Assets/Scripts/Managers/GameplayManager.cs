@@ -9,21 +9,24 @@ namespace Alexey.ZigzagTest.Managers
         [SerializeField]
         private Road _road;
 
-        float _speed = 0.05f;
+        float _speed = 0.2f;
 
         private void Start()
         {
             _road.GenerateHomeYard();
-            //_road.GenerateRoadBeginning();
+            _road.GenerateRoadBeginning();
         }
 
         private void Update()
         {
-            //_road.Shift(_speed * Time.deltaTime);
+            /*
             if (Input.GetKeyDown(KeyCode.T))
             {
                 _road.AddBlocks();
             }
+            */
+
+            _road.Shift(_speed * Time.deltaTime);
         }
     }
 }

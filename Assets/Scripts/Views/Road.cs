@@ -24,10 +24,14 @@ namespace Alexey.ZigzagTest.Views
         private int _sameDirectionBlocksCount;
         private int _blockIdxInCluster;
         private int _crystalIdxInCluster;
+        private int _currentRow;
+        private int _deletedRow;
 
         private const int MaxBlocksOfSameDirection = 5;
         private const int MaxBlocksInCluster = 5;
         private const int MaxRoadWidth = 3;
+        private const int RoadBeginningLength = 20;
+        private const int RowsToSkipBeforeDeletingStarts = 3;
 
         private readonly Color[] _testColors = new[] { Color.white, Color.yellow, Color.red, Color.green, Color.cyan };
         private bool _debugColors = true;
@@ -84,9 +88,9 @@ namespace Alexey.ZigzagTest.Views
 
         public void GenerateRoadBeginning()
         {
-            for (int i = 0; i < 10; i++)
+            for (int i = 0; i < RoadBeginningLength; i++)
             {
-                AddBlocks();
+                AddRowOfBlocks();
             }
         }
         
@@ -97,6 +101,17 @@ namespace Alexey.ZigzagTest.Views
             foreach (var observer in _observers)
             {
                 observer.Notify(shift);
+            }
+
+            if (_shiftTotal >= 1)
+            {
+                _shiftTotal = 0;
+                AddRowOfBlocks();
+
+                if (_currentRow > RowsToSkipBeforeDeletingStarts)
+                {
+                    DeleteRowOfBlocks();
+                }
             }
         }
 
@@ -113,7 +128,7 @@ namespace Alexey.ZigzagTest.Views
             return roadBlock;
         }
 
-        private void InstantiateRoadBlockInCluster(int x, int y)
+        private RoadBlock InstantiateRoadBlockInCluster(int x, int y)
         {
             if (_blockIdxInCluster >= MaxBlocksInCluster)
             {
@@ -151,6 +166,8 @@ namespace Alexey.ZigzagTest.Views
             }
             
             _blockIdxInCluster++;
+
+            return roadBlock;
         }
         
         private void AddObserver(GameObject obj)
@@ -221,27 +238,45 @@ namespace Alexey.ZigzagTest.Views
 
             return RoadDirection.Forward;
         }
-        
-        public void AddBlocks()
+
+        private void AddRowOfBlocks()
         {
             var cornerTileCoord = GetRightmostTileCoord();
             Debug.Log(cornerTileCoord);
             var direction = GetRandomDirection();
+            _currentRow++;
             for (int i = 0; i < _roadWidth; i++)
             {
+                RoadBlock roadBlock;
                 if (direction == RoadDirection.Forward)
                 {
-                    InstantiateRoadBlockInCluster(cornerTileCoord.x + i, cornerTileCoord.y - 1);
+                    roadBlock = InstantiateRoadBlockInCluster(cornerTileCoord.x + i, cornerTileCoord.y - 1);
                 }
                 else if (direction == RoadDirection.Right)
                 {
-                    InstantiateRoadBlockInCluster(cornerTileCoord.x - 1, cornerTileCoord.y + i);
+                    roadBlock = InstantiateRoadBlockInCluster(cornerTileCoord.x - 1, cornerTileCoord.y + i);
                 }
                 else
                 {
                     throw new Exception("Unimplemented direction");
                 }
+
+                roadBlock.Row = _currentRow;
             }
+        }
+
+        private void DeleteRowOfBlocks()
+        {
+            foreach (var observer in _observers)
+            {
+                var roadBlock = observer as RoadBlock;
+                if (roadBlock != null)
+                {
+                    roadBlock.DeleteRow(_deletedRow);
+                }
+            }
+
+            _deletedRow++;
         }
     }
 }

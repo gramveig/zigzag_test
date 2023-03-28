@@ -30,7 +30,7 @@ namespace Alexey.ZigzagTest.Views
             Shift(value);
         }
 
-        protected virtual void Shift(float shift)
+        protected void Shift(float shift)
         {
             Vector3 p = _transform.position;
             _transform.position = new Vector3(p.x + shift, 0, p.z + shift);

@@ -5,12 +5,13 @@ namespace Alexey.ZigzagTest.Views
 {
     public class RoadBlock : ShiftingObject
     {
-        [SerializeField]
-        private GameObject _crystal;
-        
+        [SerializeField] private GameObject _crystal;
+
+        public int Row { get; set; }
+
         private float _shiftTotal;
 
-        private const float DisappearThresholdUnits = 3;
+        private const float DisappearThreshold = 3;
 
         protected override void Awake()
         {
@@ -38,18 +39,15 @@ namespace Alexey.ZigzagTest.Views
             var renderer = GetComponent<Renderer>();
             renderer.material.color = color;
         }
-        
-        protected override void Shift(float shift)
-        {
-            base.Shift(shift);
 
-            _shiftTotal += shift;
-            if (_shiftTotal >= DisappearThresholdUnits)
+        public void DeleteRow(int row)
+        {
+            if (Row == row)
             {
                 Disappear();
             }
         }
-
+        
         private void Disappear()
         {
             Destroy(gameObject);
