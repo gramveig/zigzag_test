@@ -29,6 +29,7 @@ namespace Alexey.ZigzagTest.Managers
             _road.GenerateRoadBeginning();
             _road.OnCristalPickedEvent = OnCrystalPicked;
             _camera.SetIniPosition(_ball.CachedTransform);
+            _ball.OnFallDownEvent = OnBallFallDown;
             _gameModel = new GameModel();
             WaitForStart();
         }
@@ -66,6 +67,12 @@ namespace Alexey.ZigzagTest.Managers
             }
 
             _gameModel.score++;
+        }
+
+        private void OnBallFallDown()
+        {
+            _gameStarted = false;
+            Debug.Log("Game over");
         }
     }
 }

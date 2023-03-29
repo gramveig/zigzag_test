@@ -5,6 +5,8 @@ namespace Alexey.ZigzagTest.Views
 {
     public class Ball : MonoBehaviour
     {
+        public Action OnFallDownEvent { get; set; }
+
         private enum MovementDirection
         {
             Right,
@@ -14,11 +16,18 @@ namespace Alexey.ZigzagTest.Views
         private MovementDirection _movementDirection;
         private Transform _transform;
 
+        private const float BallFallDownThreshold = -3;
+        
         private void Awake()
         {
             _transform = transform;
         }
-        
+
+        private void Update()
+        {
+            MonitorFallDown();
+        }
+
         public void Move(float shift)
         {
             var p = _transform.position;
@@ -51,6 +60,15 @@ namespace Alexey.ZigzagTest.Views
             }
 
             return MovementDirection.Forward;
+        }
+
+        private void MonitorFallDown()
+        {
+            if (_transform.position.y < BallFallDownThreshold)
+            {
+                OnFallDownEvent?.Invoke();
+                gameObject.SetActive(false);
+            }
         }
     }
 }
