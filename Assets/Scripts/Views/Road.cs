@@ -26,7 +26,9 @@ namespace Alexey.ZigzagTest.Views
 
         [SerializeField]
         private bool _colorful = true;
-        
+
+        public Action OnCristalPickedEvent { get; set; }
+
         private Transform _transform;
         private List<IObserver<float>> _observers = new List<IObserver<float>>();
         private float _shiftTotal;
@@ -158,7 +160,7 @@ namespace Alexey.ZigzagTest.Views
             var roadBlock = InstantiateRoadBlock(x, y);
             if (_blockIdxInCluster == _crystalIdxInCluster)
             {
-                roadBlock.ShowCrystal();
+                roadBlock.ShowCrystal(OnCristalPicked);
             }
 
             if (_colorful)
@@ -290,6 +292,11 @@ namespace Alexey.ZigzagTest.Views
             }
             
             return null;
+        }
+
+        private void OnCristalPicked()
+        {
+            Debug.Log("Hit crystal");
         }
     }
 }

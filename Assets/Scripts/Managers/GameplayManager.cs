@@ -1,4 +1,5 @@
 using Alexey.ZigzagTest.Views;
+using Alexey.ZigzagTest.Models;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
 
@@ -20,13 +21,15 @@ namespace Alexey.ZigzagTest.Managers
         private float _speed = 0.2f;
 
         private bool _gameStarted;
-        private bool _inputBlocked;
-
+        private GameModel _gameModel;
+        
         private void Start()
         {
             _road.GenerateHomeYard();
             _road.GenerateRoadBeginning();
+            _road.OnCristalPickedEvent = OnCrystalPicked;
             _camera.SetIniPosition(_ball.CachedTransform);
+            _gameModel = new GameModel();
             WaitForStart();
         }
 
@@ -53,6 +56,16 @@ namespace Alexey.ZigzagTest.Managers
             _road.Shift(shift);
             _ball.Move(shift);
             _camera.Follow(_ball.CachedTransform);
+        }
+
+        private void OnCrystalPicked()
+        {
+            if (!_gameStarted)
+            {
+                return;
+            }
+
+            _gameModel.score++;
         }
     }
 }

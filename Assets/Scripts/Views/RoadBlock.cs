@@ -6,7 +6,7 @@ namespace Alexey.ZigzagTest.Views
     public class RoadBlock : ShiftingObject
     {
         [SerializeField]
-        private GameObject _crystal;
+        private Crystal _crystal;
 
         private float _shiftTotal;
 
@@ -14,7 +14,7 @@ namespace Alexey.ZigzagTest.Views
         {
             base.Awake();
 
-            _crystal.SetActive(false);
+            _crystal.Hide();
         }
 
         public Vector2Int IntCoord
@@ -26,9 +26,9 @@ namespace Alexey.ZigzagTest.Views
             }
         }
 
-        public void ShowCrystal()
+        public void ShowCrystal(Action onPick)
         {
-            _crystal.SetActive(true);
+            _crystal.Show(onPick);
         }
 
         public void SetColor(Color color)
