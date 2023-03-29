@@ -30,7 +30,7 @@ namespace Alexey.ZigzagTest.Views
         public Action OnCristalPickedEvent { get; set; }
 
         private Transform _transform;
-        private List<IObserver<float>> _observers = new List<IObserver<float>>();
+        private List<IObserver<float>> _observers = new();
         private float _shiftTotal;
         private RoadDirection _lastDirection = RoadDirection.None;
         private int _sameDirectionBlocksCount;
@@ -296,7 +296,7 @@ namespace Alexey.ZigzagTest.Views
 
         private void OnCristalPicked()
         {
-            Debug.Log("Hit crystal");
+            OnCristalPickedEvent?.Invoke();
         }
     }
 }

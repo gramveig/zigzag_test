@@ -25,6 +25,9 @@ namespace Alexey.ZigzagTest.Managers
         private UIScreen _gameOverScreen;
         
         [SerializeField]
+        private UIScreen _gameScreen;
+        
+        [SerializeField]
         private float _speed = 0.2f;
 
         private bool _gameStarted;
@@ -38,6 +41,8 @@ namespace Alexey.ZigzagTest.Managers
             _camera.SetIniPosition(_ball.CachedTransform);
             _ball.OnFallDownEvent = OnBallFallDown;
             _gameModel = new GameModel();
+            _gameModel.AddObserver(_gameScreen.gameObject);
+            _gameModel.Score = 0;
             _startScreen.Show();
             WaitForStart();
         }
@@ -48,6 +53,7 @@ namespace Alexey.ZigzagTest.Managers
 
             _gameStarted = true;
             _startScreen.Hide();
+            _gameScreen.Show();
         }
 
         private void Update()
@@ -75,12 +81,13 @@ namespace Alexey.ZigzagTest.Managers
                 return;
             }
 
-            _gameModel.score++;
+            _gameModel.Score++;
         }
 
         private void OnBallFallDown()
         {
             _gameStarted = false;
+            _gameScreen.Hide();
             _gameOverScreen.Show();
         }
     }
