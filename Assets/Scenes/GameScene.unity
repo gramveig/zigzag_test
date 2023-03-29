@@ -275,7 +275,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6757770764625179333, guid: 4d182cef11e3c4e419518903eb26e815, type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -344,11 +344,11 @@ PrefabInstance:
       objectReference: {fileID: 7945695087945022522, guid: 39574fb9ed11bdf44896d2dd85eaed43, type: 3}
     - target: {fileID: 2750419583173574347, guid: 783b0b33aeeb8e042a7f2b2aa5278f12, type: 3}
       propertyPath: _roadWidth
-      value: 3
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 2750419583173574347, guid: 783b0b33aeeb8e042a7f2b2aa5278f12, type: 3}
       propertyPath: _crystalMode
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
