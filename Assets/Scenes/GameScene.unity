@@ -271,7 +271,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6757770764625179333, guid: 4d182cef11e3c4e419518903eb26e815, type: 3}
       propertyPath: m_Name
-      value: Sphere
+      value: Ball
       objectReference: {fileID: 0}
     - target: {fileID: 6757770764625179333, guid: 4d182cef11e3c4e419518903eb26e815, type: 3}
       propertyPath: m_IsActive
@@ -282,6 +282,17 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 4d182cef11e3c4e419518903eb26e815, type: 3}
+--- !u!114 &1441044428 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 7223727194773215463, guid: 4d182cef11e3c4e419518903eb26e815, type: 3}
+  m_PrefabInstance: {fileID: 1441044427}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d294496c43e241988307d6a66f0d77bb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &886295322981112129
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -374,6 +385,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 7584652002253440991, guid: c1eae6a0c7343574483becec0da6eda1, type: 3}
+      propertyPath: _ball
+      value: 
+      objectReference: {fileID: 1441044428}
     - target: {fileID: 7584652002253440991, guid: c1eae6a0c7343574483becec0da6eda1, type: 3}
       propertyPath: _road
       value: 

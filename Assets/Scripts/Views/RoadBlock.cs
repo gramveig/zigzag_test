@@ -11,8 +11,6 @@ namespace Alexey.ZigzagTest.Views
 
         private float _shiftTotal;
 
-        private const float DisappearThreshold = 3;
-
         protected override void Awake()
         {
             base.Awake();
@@ -36,8 +34,8 @@ namespace Alexey.ZigzagTest.Views
 
         public void SetColor(Color color)
         {
-            var renderer = GetComponent<Renderer>();
-            renderer.material.color = color;
+            var rdr = GetComponent<Renderer>();
+            rdr.material.color = color;
         }
 
         public void DeleteRow(int row)

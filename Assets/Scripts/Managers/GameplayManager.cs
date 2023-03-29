@@ -11,6 +11,9 @@ namespace Alexey.ZigzagTest.Managers
         private Road _road;
 
         [SerializeField]
+        private Ball _ball;
+        
+        [SerializeField]
         private float _speed = 0.2f;
 
         private bool _gameStarted;
@@ -36,14 +39,14 @@ namespace Alexey.ZigzagTest.Managers
                 return;
             }
 
-            /*
-            if (Input.GetKeyDown(KeyCode.T))
+            if (Input.anyKeyDown)
             {
-                _road.AddBlocks();
+                _ball.ChangeMovementDirection();
             }
-            */
 
-            _road.Shift(_speed * Time.deltaTime);
+            float shift = _speed * Time.deltaTime;
+            _road.Shift(shift);
+            _ball.Move(shift);
         }
     }
 }

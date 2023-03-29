@@ -32,7 +32,7 @@ namespace Alexey.ZigzagTest.Views
         private const int MaxBlocksInCluster = 5;
         private const int MaxRoadWidth = 3;
         private const int RoadBeginningLength = 20;
-        private const int RowsToSkipBeforeDeletingStarts = 1;
+        private const int RowsToSkipBeforeDeletingStarts = 2;
 
         private readonly Color[] _testColors = new[] { Color.white, Color.yellow, Color.red, Color.green, Color.cyan };
         private bool _debugColors = true;
@@ -244,7 +244,6 @@ namespace Alexey.ZigzagTest.Views
         private void AddRowOfBlocks()
         {
             var cornerTileCoord = GetRightmostTileCoord();
-            Debug.Log(cornerTileCoord);
             var direction = GetRandomDirection();
             _currentRow++;
             for (int i = 0; i < _roadWidth; i++)
