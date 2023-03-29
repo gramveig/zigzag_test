@@ -8,8 +8,14 @@ namespace Alexey.ZigzagTest.Views
         [SerializeField]
         private Crystal _crystal;
 
-        private float _shiftTotal;
+        [SerializeField]
+        private float _fallSpeed = 1;
 
+        private float _shiftTotal;
+        private bool _isFalling;
+
+        private const float FallThreshold = -10;
+        
         protected override void Awake()
         {
             base.Awake();
@@ -17,6 +23,22 @@ namespace Alexey.ZigzagTest.Views
             _crystal.Hide();
         }
 
+        protected void Update()
+        {
+            if (!_isFalling)
+            {
+                return;
+            }
+
+            var p = _transform.position;
+            _transform.position = new Vector3(p.x, p.y - _fallSpeed * Time.deltaTime, p.z);
+
+            if (p.y < FallThreshold)
+            {
+                Destroy(gameObject);
+            }
+        }
+        
         public Vector2Int IntCoord
         {
             get
@@ -41,7 +63,15 @@ namespace Alexey.ZigzagTest.Views
         
         public void Disappear()
         {
-            Destroy(gameObject);
+            _isFalling = true;
+        }
+
+        protected override void Shift(float shift)
+        {
+            if (!_isFalling)
+            {
+                base.Shift(shift);
+            }
         }
     }
 }

@@ -280,3 +280,4 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _crystal: {fileID: 7719167643931766222}
+  _fallSpeed: 10
