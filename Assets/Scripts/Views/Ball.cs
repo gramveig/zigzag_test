@@ -24,11 +24,11 @@ namespace Alexey.ZigzagTest.Views
             var p = _transform.position;
             if (_movementDirection == BallMovementDirection.Forward)
             {
-                _transform.position = new Vector3(p.x + shift, p.y, p.z);
+                _transform.position = new Vector3(p.x + shift, p.y, p.z - shift);
             }
             else if (_movementDirection == BallMovementDirection.Right)
             {
-                _transform.position = new Vector3(p.x, p.y, p.z + shift);
+                _transform.position = new Vector3(p.x - shift, p.y, p.z + shift);
             }
             else
             {
