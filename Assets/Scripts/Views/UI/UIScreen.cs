@@ -5,11 +5,6 @@ namespace Alexey.ZigzagTest.Views.UI
 {
     public class UIScreen : MonoBehaviour
     {
-        private void Awake()
-        {
-            Hide();
-        }
-
         public void Show()
         {
             gameObject.SetActive(true);

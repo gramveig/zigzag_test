@@ -404,6 +404,10 @@ PrefabInstance:
       propertyPath: _startScreen
       value: 
       objectReference: {fileID: 2833045087492588382}
+    - target: {fileID: 6374403356411663784, guid: 5379e2582a771eb44912725658559d7e, type: 3}
+      propertyPath: _gameOverScreen
+      value: 
+      objectReference: {fileID: 2833045087492588383}
     - target: {fileID: 6538585597907113904, guid: 5379e2582a771eb44912725658559d7e, type: 3}
       propertyPath: m_RootOrder
       value: 1
@@ -610,6 +614,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Canvas
       objectReference: {fileID: 0}
+    - target: {fileID: 5407820054237828673, guid: 3abb727c6ddcf9b419b1705b8b93727a, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 8093329094587096715, guid: 3abb727c6ddcf9b419b1705b8b93727a, type: 3}
       propertyPath: m_Camera
       value: 
@@ -622,6 +630,17 @@ PrefabInstance:
 --- !u!114 &2833045087492588382 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 2648962955039091076, guid: 3abb727c6ddcf9b419b1705b8b93727a, type: 3}
+  m_PrefabInstance: {fileID: 2833045087492588381}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: acb4db3469f54d3d9c39422567225491, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &2833045087492588383 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 3007106450254377419, guid: 3abb727c6ddcf9b419b1705b8b93727a, type: 3}
   m_PrefabInstance: {fileID: 2833045087492588381}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 0}

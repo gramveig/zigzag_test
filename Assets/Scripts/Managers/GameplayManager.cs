@@ -22,6 +22,9 @@ namespace Alexey.ZigzagTest.Managers
         private UIScreen _startScreen;
         
         [SerializeField]
+        private UIScreen _gameOverScreen;
+        
+        [SerializeField]
         private float _speed = 0.2f;
 
         private bool _gameStarted;
@@ -78,7 +81,7 @@ namespace Alexey.ZigzagTest.Managers
         private void OnBallFallDown()
         {
             _gameStarted = false;
-            Debug.Log("Game over");
+            _gameOverScreen.Show();
         }
     }
 }
