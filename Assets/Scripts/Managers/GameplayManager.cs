@@ -1,5 +1,6 @@
 using Alexey.ZigzagTest.Views;
 using Alexey.ZigzagTest.Models;
+using Alexey.ZigzagTest.Views.UI;
 using Cysharp.Threading.Tasks;
 using UnityEngine;
 
@@ -18,6 +19,9 @@ namespace Alexey.ZigzagTest.Managers
         private GameCamera _camera;
         
         [SerializeField]
+        private UIScreen _startScreen;
+        
+        [SerializeField]
         private float _speed = 0.2f;
 
         private bool _gameStarted;
@@ -31,6 +35,7 @@ namespace Alexey.ZigzagTest.Managers
             _camera.SetIniPosition(_ball.CachedTransform);
             _ball.OnFallDownEvent = OnBallFallDown;
             _gameModel = new GameModel();
+            _startScreen.Show();
             WaitForStart();
         }
 
@@ -39,6 +44,7 @@ namespace Alexey.ZigzagTest.Managers
             await UniTask.WaitUntil(() => Input.anyKeyDown);
 
             _gameStarted = true;
+            _startScreen.Hide();
         }
 
         private void Update()
