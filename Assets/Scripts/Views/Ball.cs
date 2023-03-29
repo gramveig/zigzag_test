@@ -1,5 +1,6 @@
 using UnityEngine;
 using System;
+using Cysharp.Threading.Tasks;
 
 namespace Alexey.ZigzagTest.Views
 {
@@ -16,7 +17,7 @@ namespace Alexey.ZigzagTest.Views
         private MovementDirection _movementDirection;
         private Transform _transform;
 
-        private const float BallFallDownThreshold = -3;
+        private const float BallFallDownThreshold = 0;
         
         private void Awake()
         {
@@ -52,6 +53,22 @@ namespace Alexey.ZigzagTest.Views
 
         public Transform CachedTransform => _transform;
 
+        public void Show()
+        {
+            gameObject.SetActive(true);
+        }
+
+        public void Hide()
+        {
+            gameObject.SetActive(false);
+        }
+
+        public void Reset()
+        {
+            _movementDirection = MovementDirection.Right;
+            _transform.rotation = Quaternion.identity;
+        }
+        
         private MovementDirection GetDifferentDirection(MovementDirection direction)
         {
             if (direction == MovementDirection.Forward)
@@ -67,8 +84,15 @@ namespace Alexey.ZigzagTest.Views
             if (_transform.position.y < BallFallDownThreshold)
             {
                 OnFallDownEvent?.Invoke();
-                gameObject.SetActive(false);
+                WaitHide();
             }
+        }
+
+        private async void WaitHide()
+        {
+            await UniTask.Delay(500);
+            
+            Hide();
         }
     }
 }

@@ -36,7 +36,6 @@ namespace Alexey.ZigzagTest.Views
         private int _sameDirectionBlocksCount;
         private int _blockIdxInCluster;
         private int _crystalIdxInCluster;
-        private int _deletedRow;
 
         private const int MaxBlocksOfSameDirection = 5;
         private const int MaxBlocksInCluster = 5;
@@ -121,6 +120,21 @@ namespace Alexey.ZigzagTest.Views
         public void Unsubscribe(IObserver<float> observer)
         {
             _observers.Remove(observer);
+        }
+
+        public void Clear()
+        {
+            foreach (Transform t in _transform)
+            {
+                Destroy(t.gameObject);
+            }
+
+            _shiftTotal = 0;
+            _lastDirection = RoadDirection.None;
+            _sameDirectionBlocksCount = 0;
+            _blockIdxInCluster = 0;
+            _crystalIdxInCluster = 0;
+            _observers.Clear();
         }
 
         private RoadBlock InstantiateRoadBlock(int x, int y)
