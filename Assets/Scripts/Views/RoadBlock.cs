@@ -5,9 +5,8 @@ namespace Alexey.ZigzagTest.Views
 {
     public class RoadBlock : ShiftingObject
     {
-        [SerializeField] private GameObject _crystal;
-
-        public int Row { get; set; }
+        [SerializeField]
+        private GameObject _crystal;
 
         private float _shiftTotal;
 
@@ -38,15 +37,9 @@ namespace Alexey.ZigzagTest.Views
             rdr.material.color = color;
         }
 
-        public void DeleteRow(int row)
-        {
-            if (Row == row)
-            {
-                Disappear();
-            }
-        }
+        public Transform CachedTransform => _transform;
         
-        private void Disappear()
+        public void Disappear()
         {
             Destroy(gameObject);
         }

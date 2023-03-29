@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Runtime.InteropServices.ComTypes;
 using UnityEngine;
 using Random = System.Random;
 
@@ -16,7 +17,16 @@ namespace Alexey.ZigzagTest.Views
 
         [SerializeField]
         private int _roadWidth = 1;
+        
+        [SerializeField]
+        private Ball _ball;
 
+        [SerializeField]
+        private GameObject _sampleCube;
+
+        [SerializeField]
+        private bool _colorful = true;
+        
         private Transform _transform;
         private List<IObserver<float>> _observers = new List<IObserver<float>>();
         private float _shiftTotal;
@@ -24,18 +34,16 @@ namespace Alexey.ZigzagTest.Views
         private int _sameDirectionBlocksCount;
         private int _blockIdxInCluster;
         private int _crystalIdxInCluster;
-        private int _currentRow;
         private int _deletedRow;
-        private int _additionalRowsAdded;
 
         private const int MaxBlocksOfSameDirection = 5;
         private const int MaxBlocksInCluster = 5;
         private const int MaxRoadWidth = 3;
         private const int RoadBeginningLength = 20;
-        private const int RowsToSkipBeforeDeletingStarts = 2;
+        private const float NewBlockPosThreshold = 15;
+        private const float OldBlockPosThreshold = 5;
 
-        private readonly Color[] _testColors = new[] { Color.white, Color.yellow, Color.red, Color.green, Color.cyan };
-        private bool _debugColors = true;
+        private readonly Color[] _blockColors = new[] { Color.white, Color.yellow, Color.red, Color.green, Color.cyan };
 
         enum RoadDirection
         {
@@ -52,6 +60,8 @@ namespace Alexey.ZigzagTest.Views
 
         private void Awake()
         {
+            Destroy(_sampleCube);
+
             if (_roadWidth < 0)
             {
                 _roadWidth = 0;
@@ -62,13 +72,6 @@ namespace Alexey.ZigzagTest.Views
             }
             
             _transform = transform;
-
-            //add observers for the road blocks already on scene
-            var shiftingObjects = FindObjectsOfType<ShiftingObject>();
-            foreach (var shiftingObject in shiftingObjects)
-            {
-                AddObserver(shiftingObject.gameObject);
-            }
         }
 
         public void GenerateHomeYard()
@@ -77,11 +80,6 @@ namespace Alexey.ZigzagTest.Views
             {
                 for (int y = -1; y <= 1; y++)
                 {
-                    if (x == 0 && y == 0)
-                    {
-                        continue;
-                    }
-
                     InstantiateRoadBlock(x, y);
                 }
             }
@@ -107,14 +105,15 @@ namespace Alexey.ZigzagTest.Views
             if (_shiftTotal >= 1)
             {
                 _shiftTotal = 0;
-                _additionalRowsAdded++;
-                AddRowOfBlocks();
-
-                if (_additionalRowsAdded > RowsToSkipBeforeDeletingStarts)
+                if (IsNewBlockNeeded())
                 {
-                    DeleteRowOfBlocks();
+                    AddRowOfBlocks();
+                    AddRowOfBlocks();
+                    AddRowOfBlocks();
                 }
             }
+
+            DestroyBlocks();
         }
 
         public void Unsubscribe(IObserver<float> observer)
@@ -162,9 +161,9 @@ namespace Alexey.ZigzagTest.Views
                 roadBlock.ShowCrystal();
             }
 
-            if (_debugColors)
+            if (_colorful)
             {
-                roadBlock.SetColor(_testColors[_blockIdxInCluster]);
+                roadBlock.SetColor(_blockColors[_blockIdxInCluster]);
             }
             
             _blockIdxInCluster++;
@@ -245,7 +244,6 @@ namespace Alexey.ZigzagTest.Views
         {
             var cornerTileCoord = GetRightmostTileCoord();
             var direction = GetRandomDirection();
-            _currentRow++;
             for (int i = 0; i < _roadWidth; i++)
             {
                 RoadBlock roadBlock;
@@ -261,23 +259,37 @@ namespace Alexey.ZigzagTest.Views
                 {
                     throw new Exception("Unimplemented direction");
                 }
-
-                roadBlock.Row = _currentRow;
             }
         }
 
-        private void DeleteRowOfBlocks()
+        private bool IsNewBlockNeeded()
+        {
+            var tc = GetRightmostTileCoord();
+            var p = new Vector3(tc.x, 0 ,tc.y);
+            return (p - _ball.CachedTransform.position).magnitude < NewBlockPosThreshold;
+        }
+
+        private void DestroyBlocks()
+        {
+            var block = GetFirstRoadBlock();
+            if ((block.CachedTransform.position - _ball.CachedTransform.position).magnitude > OldBlockPosThreshold)
+            {
+                block.Disappear();
+            }
+        }
+
+        private RoadBlock GetFirstRoadBlock()
         {
             foreach (var observer in _observers)
             {
-                var roadBlock = observer as RoadBlock;
-                if (roadBlock != null)
+                var block = observer as RoadBlock;
+                if (block != null)
                 {
-                    roadBlock.DeleteRow(_deletedRow);
+                    return block;
                 }
             }
-
-            _deletedRow++;
+            
+            return null;
         }
     }
 }

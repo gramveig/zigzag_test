@@ -15,7 +15,7 @@ namespace Alexey.ZigzagTest.Views
 
         private void OnDestroy()
         {
-            _road.Unsubscribe(this);
+            _road?.Unsubscribe(this);
         }
 
         public IObserver<float> Subscribe(IObservable<float> road)
@@ -30,7 +30,7 @@ namespace Alexey.ZigzagTest.Views
             Shift(value);
         }
 
-        protected void Shift(float shift)
+        protected virtual void Shift(float shift)
         {
             Vector3 p = _transform.position;
             _transform.position = new Vector3(p.x + shift, 0, p.z + shift);

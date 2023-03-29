@@ -14,20 +14,25 @@ namespace Alexey.ZigzagTest.Managers
         private Ball _ball;
         
         [SerializeField]
+        private GameCamera _camera;
+        
+        [SerializeField]
         private float _speed = 0.2f;
 
         private bool _gameStarted;
+        private bool _inputBlocked;
 
         private void Start()
         {
             _road.GenerateHomeYard();
             _road.GenerateRoadBeginning();
+            _camera.SetIniPosition(_ball.CachedTransform);
             WaitForStart();
         }
 
         private async void WaitForStart()
         {
-            await UniTask.WaitUntil(() => Input.anyKey);
+            await UniTask.WaitUntil(() => Input.anyKeyDown);
 
             _gameStarted = true;
         }
@@ -47,6 +52,7 @@ namespace Alexey.ZigzagTest.Managers
             float shift = _speed * Time.deltaTime;
             _road.Shift(shift);
             _ball.Move(shift);
+            _camera.Follow(_ball.CachedTransform);
         }
     }
 }
