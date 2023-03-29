@@ -26,12 +26,13 @@ namespace Alexey.ZigzagTest.Views
         private int _crystalIdxInCluster;
         private int _currentRow;
         private int _deletedRow;
+        private int _additionalRowsAdded;
 
         private const int MaxBlocksOfSameDirection = 5;
         private const int MaxBlocksInCluster = 5;
         private const int MaxRoadWidth = 3;
         private const int RoadBeginningLength = 20;
-        private const int RowsToSkipBeforeDeletingStarts = 3;
+        private const int RowsToSkipBeforeDeletingStarts = 1;
 
         private readonly Color[] _testColors = new[] { Color.white, Color.yellow, Color.red, Color.green, Color.cyan };
         private bool _debugColors = true;
@@ -106,9 +107,10 @@ namespace Alexey.ZigzagTest.Views
             if (_shiftTotal >= 1)
             {
                 _shiftTotal = 0;
+                _additionalRowsAdded++;
                 AddRowOfBlocks();
 
-                if (_currentRow > RowsToSkipBeforeDeletingStarts)
+                if (_additionalRowsAdded > RowsToSkipBeforeDeletingStarts)
                 {
                     DeleteRowOfBlocks();
                 }
