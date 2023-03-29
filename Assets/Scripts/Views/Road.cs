@@ -287,25 +287,26 @@ namespace Alexey.ZigzagTest.Views
 
         private void DestroyBlocks()
         {
-            var block = GetFirstRoadBlock();
-            if ((block.CachedTransform.position - _ball.CachedTransform.position).magnitude > OldBlockPosThreshold)
-            {
-                block.Disappear();
-            }
-        }
-
-        private RoadBlock GetFirstRoadBlock()
-        {
+            List<RoadBlock> blocksToDestroy = new();
+            
             foreach (var observer in _observers)
             {
                 var block = observer as RoadBlock;
                 if (block != null)
                 {
-                    return block;
+                    blocksToDestroy.Add(block);
                 }
             }
-            
-            return null;
+
+            foreach (var block in blocksToDestroy)
+            {
+                if (    block.CachedTransform.position.x > _ball.CachedTransform.position.x
+                    && (block.CachedTransform.position - _ball.CachedTransform.position).magnitude > OldBlockPosThreshold
+                )
+                {
+                    block.Disappear();
+                }
+            }
         }
 
         private void OnCristalPicked()
