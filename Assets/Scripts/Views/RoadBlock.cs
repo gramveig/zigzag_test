@@ -66,7 +66,7 @@ namespace Alexey.ZigzagTest.Views
             _isFalling = true;
         }
 
-        protected override void Shift(float shift)
+        public override void Shift(float shift)
         {
             if (!_isFalling)
             {

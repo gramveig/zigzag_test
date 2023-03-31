@@ -7,7 +7,7 @@ using Random = System.Random;
 
 namespace Alexey.ZigzagTest.Views
 {
-    public class Road : MonoBehaviour, IObservable<float>
+    public class Road : MonoBehaviour
     {
         [SerializeField]
         private RoadBlock _roadBlock;
@@ -30,7 +30,7 @@ namespace Alexey.ZigzagTest.Views
         public Action OnCristalPickedEvent { get; set; }
 
         private Transform _transform;
-        private List<IObserver<float>> _observers = new();
+        private List<RoadBlock> _blocks = new();
         private float _shiftTotal;
         private RoadDirection _lastDirection = RoadDirection.None;
         private int _sameDirectionBlocksCount;
@@ -98,9 +98,9 @@ namespace Alexey.ZigzagTest.Views
         {
             _shiftTotal += shift;
 
-            foreach (var observer in _observers)
+            foreach (var block in _blocks)
             {
-                observer.Notify(shift);
+                block.Shift(shift);
             }
 
             if (_shiftTotal >= 1)
@@ -117,11 +117,6 @@ namespace Alexey.ZigzagTest.Views
             DestroyBlocks();
         }
 
-        public void Unsubscribe(IObserver<float> observer)
-        {
-            _observers.Remove(observer);
-        }
-
         public void Clear()
         {
             foreach (Transform t in _transform)
@@ -134,18 +129,18 @@ namespace Alexey.ZigzagTest.Views
             _sameDirectionBlocksCount = 0;
             _blockIdxInCluster = 0;
             _crystalIdxInCluster = 0;
-            _observers.Clear();
+            _blocks.Clear();
         }
 
         private RoadBlock InstantiateRoadBlock(int x, int y)
         {
             var roadBlock = Instantiate(_roadBlock, new Vector3(x, 0, y), Quaternion.identity, _transform);
-            AddObserver(roadBlock.gameObject);
+            _blocks.Add(roadBlock);
 
             return roadBlock;
         }
 
-        private RoadBlock InstantiateRoadBlockInCluster(int x, int y)
+        private void InstantiateRoadBlockInCluster(int x, int y)
         {
             if (_blockIdxInCluster >= MaxBlocksInCluster)
             {
@@ -183,27 +178,16 @@ namespace Alexey.ZigzagTest.Views
             }
             
             _blockIdxInCluster++;
-
-            return roadBlock;
         }
         
-        private void AddObserver(GameObject obj)
-        {
-            var observer = obj.GetComponent<IObserver<float>>();
-            if (observer != null)
-            {
-                _observers.Add(observer.Subscribe(this));
-            }
-        }
-
         private Vector2Int GetRightmostTileCoord()
         {
             int rightmostBlockX = int.MaxValue;
             int rightmostBlockY = int.MaxValue;
 
-            foreach (var observer in _observers)
+            foreach (var block in _blocks)
             {
-                var roadBlock = observer as RoadBlock;
+                var roadBlock = block as RoadBlock;
                 if (roadBlock == null)
                 {
                     continue;
@@ -262,14 +246,13 @@ namespace Alexey.ZigzagTest.Views
             var direction = GetRandomDirection();
             for (int i = 0; i < _roadWidth; i++)
             {
-                RoadBlock roadBlock;
                 if (direction == RoadDirection.Forward)
                 {
-                    roadBlock = InstantiateRoadBlockInCluster(cornerTileCoord.x + i, cornerTileCoord.y - 1);
+                    InstantiateRoadBlockInCluster(cornerTileCoord.x + i, cornerTileCoord.y - 1);
                 }
                 else if (direction == RoadDirection.Right)
                 {
-                    roadBlock = InstantiateRoadBlockInCluster(cornerTileCoord.x - 1, cornerTileCoord.y + i);
+                    InstantiateRoadBlockInCluster(cornerTileCoord.x - 1, cornerTileCoord.y + i);
                 }
                 else
                 {
@@ -287,24 +270,15 @@ namespace Alexey.ZigzagTest.Views
 
         private void DestroyBlocks()
         {
-            List<RoadBlock> blocksToDestroy = new();
-            
-            foreach (var observer in _observers)
+            for (int i = _blocks.Count - 1; i >= 0; i--)
             {
-                var block = observer as RoadBlock;
-                if (block != null)
-                {
-                    blocksToDestroy.Add(block);
-                }
-            }
-
-            foreach (var block in blocksToDestroy)
-            {
+                var block = _blocks[i];
                 if (    block.CachedTransform.position.x > _ball.CachedTransform.position.x
                     && (block.CachedTransform.position - _ball.CachedTransform.position).magnitude > OldBlockPosThreshold
                 )
                 {
                     block.Disappear();
+                    _blocks.RemoveAt(i);
                 }
             }
         }
