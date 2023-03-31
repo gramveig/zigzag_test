@@ -80,6 +80,8 @@ namespace Alexey.ZigzagTest.Views
 
         public void ChangeMovementDirection()
         {
+            _rigidBody.velocity = Vector3.zero;
+            _rigidBody.angularVelocity = Vector3.zero;
             _movementDirection = GetDifferentDirection(_movementDirection);
         }
 
