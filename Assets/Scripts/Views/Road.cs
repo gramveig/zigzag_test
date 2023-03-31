@@ -103,7 +103,8 @@ namespace Alexey.ZigzagTest.Views
                 block.Shift(shift);
             }
 
-            if (_shiftTotal >= 1)
+            //have to wait while the blocks are aligned with coordinate grid to add new blocks
+            if (_shiftTotal > 1)
             {
                 _shiftTotal = 0;
                 if (IsNewBlockNeeded())
@@ -114,6 +115,7 @@ namespace Alexey.ZigzagTest.Views
                 }
             }
 
+            //can destroy blocks anytime
             DestroyBlocks();
         }
 
