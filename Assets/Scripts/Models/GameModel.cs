@@ -6,7 +6,7 @@ namespace Alexey.ZigzagTest.Models
 {
     public class GameModel : IObservable<int>
     {
-        private List<IObserver<int>> _observers = new();
+        private List<IObserver<int>> _scoreObservers = new();
 
         private int _score;
         public int Score
@@ -15,25 +15,21 @@ namespace Alexey.ZigzagTest.Models
             set
             {
                 _score = value;
-                foreach (var observer in _observers)
+                foreach (var observer in _scoreObservers)
                 {
                     observer.Notify(Score);
                 }
             }
         }
 
-        public void AddObserver(GameObject obj)
+        public void AddScoreObserver(IObserver<int> observer)
         {
-            var observer = obj.GetComponent<IObserver<int>>();
-            if (observer != null)
-            {
-                _observers.Add(observer.Subscribe(this));
-            }
+            _scoreObservers.Add(observer.Subscribe(this));
         }
 
         public void Unsubscribe(IObserver<int> observer)
         {
-            _observers.Remove(observer);
+            _scoreObservers.Remove(observer);
         }
     }
 }
