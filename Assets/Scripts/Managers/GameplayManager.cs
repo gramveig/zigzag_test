@@ -1,3 +1,4 @@
+using System;
 using Alexey.ZigzagTest.Views;
 using Alexey.ZigzagTest.Models;
 using Alexey.ZigzagTest.Views.UI;
@@ -34,14 +35,14 @@ namespace Alexey.ZigzagTest.Managers
         private GameModel _gameModel;
         private Vector3 _ballIniPos;
 
-        private void Start()
+        private async void Start()
         {
-            _ballIniPos = _ball.CachedTransform.position;
-            StartGame();
+            await StartGame();
         }
 
-        private void StartGame()
+        private async UniTask StartGame()
         {
+            _ballIniPos = _ball.CachedTransform.position;
             _road.GenerateHomeYard();
             _road.GenerateRoadBeginning();
             _road.OnCristalPickedEvent = OnCrystalPicked;
@@ -51,10 +52,10 @@ namespace Alexey.ZigzagTest.Managers
             _gameModel.AddObserver(_gameScreen.gameObject);
             _gameModel.Score = 0;
             _startScreen.Show();
-            WaitForStart();
+            await WaitForStart();
         }
         
-        private async void WaitForStart()
+        private async UniTask WaitForStart()
         {
             await UniTask.WaitUntil(() => Input.anyKeyDown);
 
@@ -91,15 +92,20 @@ namespace Alexey.ZigzagTest.Managers
             _gameModel.Score++;
         }
 
-        private void OnBallFallDown()
+        private async void OnBallFallDown()
+        {
+            await EndGame();
+        }
+
+        private async UniTask EndGame()
         {
             _gameStarted = false;
             _gameScreen.Hide();
             _gameOverScreen.Show();
-            WaitForRestart();
+            await WaitForRestart();
         }
 
-        private async void WaitForRestart()
+        private async UniTask WaitForRestart()
         {
             await UniTask.WaitUntil(() => Input.anyKeyDown);
 
@@ -111,13 +117,12 @@ namespace Alexey.ZigzagTest.Managers
             _gameOverScreen.Hide();
             _road.Clear();
             _ball.CachedTransform.position = _ballIniPos;
+            _ball.Reset();
             _ball.Show();
             
             _road.GenerateHomeYard();
             _road.GenerateRoadBeginning();
             _road.OnCristalPickedEvent = OnCrystalPicked;
-            _ball.OnFallDownEvent = OnBallFallDown;
-            _ball.Reset();
             _gameModel = new GameModel();
             _gameModel.AddObserver(_gameScreen.gameObject);
             _gameModel.Score = 0;
@@ -125,6 +130,7 @@ namespace Alexey.ZigzagTest.Managers
             _startScreen.Hide();
             _gameScreen.Show();
             _gameStarted = true;
+            //Debug.Break();
         }
     }
 }

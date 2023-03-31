@@ -24,9 +24,9 @@ namespace Alexey.ZigzagTest.Views
             _transform = transform;
         }
 
-        private void Update()
+        private async void Update()
         {
-            MonitorFallDown();
+            await MonitorFallDown();
         }
 
         public void Move(float shift)
@@ -79,16 +79,16 @@ namespace Alexey.ZigzagTest.Views
             return MovementDirection.Forward;
         }
 
-        private void MonitorFallDown()
+        private async UniTask MonitorFallDown()
         {
             if (_transform.position.y < BallFallDownThreshold)
             {
                 OnFallDownEvent?.Invoke();
-                WaitHide();
+                await WaitAndHide();
             }
         }
 
-        private async void WaitHide()
+        private async UniTask WaitAndHide()
         {
             await UniTask.Delay(500);
             
