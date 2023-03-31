@@ -33,7 +33,6 @@ namespace Alexey.ZigzagTest.Managers
 
         private bool _gameStarted;
         private GameModel _gameModel;
-        private Vector3 _ballIniPos;
 
         private async void Start()
         {
@@ -42,7 +41,6 @@ namespace Alexey.ZigzagTest.Managers
 
         private async UniTask StartGame()
         {
-            _ballIniPos = _ball.CachedTransform.position;
             _road.GenerateHomeYard();
             _road.GenerateRoadBeginning();
             _road.OnCristalPickedEvent = OnCrystalPicked;
@@ -116,13 +114,11 @@ namespace Alexey.ZigzagTest.Managers
         {
             _gameOverScreen.Hide();
             _road.Clear();
-            _ball.CachedTransform.position = _ballIniPos;
             _ball.Reset();
             _ball.Show();
             
             _road.GenerateHomeYard();
             _road.GenerateRoadBeginning();
-            _road.OnCristalPickedEvent = OnCrystalPicked;
             _gameModel = new GameModel();
             _gameModel.AddObserver(_gameScreen.gameObject);
             _gameModel.Score = 0;
@@ -130,7 +126,6 @@ namespace Alexey.ZigzagTest.Managers
             _startScreen.Hide();
             _gameScreen.Show();
             _gameStarted = true;
-            //Debug.Break();
         }
     }
 }

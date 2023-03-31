@@ -13,15 +13,23 @@ namespace Alexey.ZigzagTest.Views
             Right,
             Forward
         }
-        
+
         private MovementDirection _movementDirection;
         private Transform _transform;
+        private Vector3 _iniPosition;
+        private Rigidbody _rigidBody;
 
         private const float BallFallDownThreshold = 0;
-        
+
         private void Awake()
         {
             _transform = transform;
+            _rigidBody = GetComponent<Rigidbody>();
+        }
+
+        private void Start()
+        {
+            _iniPosition = _transform.position;
         }
 
         private async void Update()
@@ -65,8 +73,10 @@ namespace Alexey.ZigzagTest.Views
 
         public void Reset()
         {
+            _rigidBody.velocity = Vector3.zero;
             _movementDirection = MovementDirection.Right;
             _transform.rotation = Quaternion.identity;
+            _transform.position = _iniPosition;
         }
         
         private MovementDirection GetDifferentDirection(MovementDirection direction)
