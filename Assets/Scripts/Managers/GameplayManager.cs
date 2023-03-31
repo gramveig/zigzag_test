@@ -107,10 +107,10 @@ namespace Alexey.ZigzagTest.Managers
         {
             await UniTask.WaitUntil(() => Input.anyKeyDown);
 
-            RestartGame();
+            await RestartGame();
         }
 
-        private void RestartGame()
+        private async UniTask RestartGame()
         {
             _gameOverScreen.Hide();
             _road.Clear();
@@ -122,7 +122,16 @@ namespace Alexey.ZigzagTest.Managers
             _gameModel = new GameModel();
             _gameModel.AddScoreObserver(_gameScreen);
             _gameModel.Score = 0;
+
+            await WaitAndStartGame();
+        }
+
+        private async UniTask WaitAndStartGame()
+        {
+            _camera.Follow(_ball.CachedTransform);
             _startScreen.Show();
+            await UniTask.WaitUntil(() => Input.anyKeyDown);
+
             _startScreen.Hide();
             _gameScreen.Show();
             _gameStarted = true;

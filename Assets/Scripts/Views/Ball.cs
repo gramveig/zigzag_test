@@ -1,5 +1,6 @@
 using UnityEngine;
 using System;
+using System.Threading;
 using Cysharp.Threading.Tasks;
 
 namespace Alexey.ZigzagTest.Views
@@ -14,10 +15,12 @@ namespace Alexey.ZigzagTest.Views
             Forward
         }
 
+        private bool _isActive = false;
         private MovementDirection _movementDirection;
         private Transform _transform;
         private Vector3 _iniPosition;
         private Rigidbody _rigidBody;
+        private CancellationTokenSource _cancellationTokenSource;
 
         private const float BallFallDownThreshold = 0;
 
@@ -25,16 +28,33 @@ namespace Alexey.ZigzagTest.Views
         {
             _transform = transform;
             _rigidBody = GetComponent<Rigidbody>();
+            _cancellationTokenSource = new CancellationTokenSource();
         }
 
         private void Start()
         {
             _iniPosition = _transform.position;
+            _isActive = true;
         }
 
         private async void Update()
         {
-            await MonitorFallDown();
+            if (!_isActive)
+            {
+                return;
+            }
+
+            try
+            {
+                await MonitorFallDown();
+            }
+            catch (Exception e)
+            {
+                if (!e.IsOperationCanceledException())
+                {
+                    throw;
+                }
+            }
         }
 
         public void Move(float shift)
@@ -77,11 +97,14 @@ namespace Alexey.ZigzagTest.Views
 
         public void Reset()
         {
+            _cancellationTokenSource.Cancel(true);
             _rigidBody.velocity = Vector3.zero;
             _rigidBody.angularVelocity = Vector3.zero;
             _movementDirection = MovementDirection.Right;
             _transform.rotation = Quaternion.identity;
             _transform.position = _iniPosition;
+            _cancellationTokenSource = new CancellationTokenSource();
+            _isActive = true;
         }
         
         private MovementDirection GetDifferentDirection(MovementDirection direction)
@@ -96,17 +119,18 @@ namespace Alexey.ZigzagTest.Views
 
         private async UniTask MonitorFallDown()
         {
-            if (_transform.position.y < BallFallDownThreshold)
+            if (_isActive && _transform.position.y < BallFallDownThreshold)
             {
+                _isActive = false;
                 OnFallDownEvent?.Invoke();
-                await WaitAndHide();
+                await WaitAndHide(); 
             }
         }
 
         private async UniTask WaitAndHide()
         {
-            await UniTask.Delay(500);
-            
+            await UniTask.Delay(500, cancellationToken: _cancellationTokenSource.Token);
+
             Hide();
         }
     }
