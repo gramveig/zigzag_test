@@ -39,14 +39,18 @@ namespace Alexey.ZigzagTest.Views
 
         public void Move(float shift)
         {
-            var p = _transform.position;
+            var p1 = _transform.position;
             if (_movementDirection == MovementDirection.Forward)
             {
-                _transform.position = new Vector3(p.x + shift, p.y, p.z - shift);
+                var p2 = new Vector3(p1.x + shift, p1.y, p1.z - shift);
+                _transform.position = p2;
+                transform.RotateAround(transform.position, -Vector3.right, Mathf.Sin((p2 - p1).magnitude * 0.5f * 2 * Mathf.PI) * Mathf.Rad2Deg);
             }
             else if (_movementDirection == MovementDirection.Right)
             {
-                _transform.position = new Vector3(p.x - shift, p.y, p.z + shift);
+                var p2 = new Vector3(p1.x - shift, p1.y, p1.z + shift);
+                _transform.position = p2;
+                transform.RotateAround(transform.position, Vector3.forward, Mathf.Sin((p2 - p1).magnitude * 0.5f * 2 * Mathf.PI) * Mathf.Rad2Deg);
             }
             else
             {
@@ -74,6 +78,7 @@ namespace Alexey.ZigzagTest.Views
         public void Reset()
         {
             _rigidBody.velocity = Vector3.zero;
+            _rigidBody.angularVelocity = Vector3.zero;
             _movementDirection = MovementDirection.Right;
             _transform.rotation = Quaternion.identity;
             _transform.position = _iniPosition;
