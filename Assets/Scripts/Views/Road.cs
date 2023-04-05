@@ -36,13 +36,14 @@ namespace Alexey.ZigzagTest.Views
         private int _sameDirectionBlocksCount;
         private int _blockIdxInCluster;
         private int _crystalIdxInCluster;
+        private Camera _cam;
 
         private const int MaxBlocksOfSameDirection = 5;
         private const int MaxBlocksInCluster = 5;
         private const int MaxRoadWidth = 3;
         private const int RoadBeginningLength = 20;
         private const float NewBlockPosThreshold = 15;
-        private const float OldBlockPosThreshold = 5;
+        private const float CloseToScreenEdgeUnitsThreshold = 2;
 
         private readonly Color[] _blockColors = new[] { Color.white, Color.yellow, Color.red, Color.green, Color.cyan };
 
@@ -63,6 +64,8 @@ namespace Alexey.ZigzagTest.Views
         {
             Destroy(_sampleCube);
 
+            _cam = Camera.main;
+            
             if (_roadWidth < 0)
             {
                 _roadWidth = 0;
@@ -275,9 +278,9 @@ namespace Alexey.ZigzagTest.Views
             for (int i = _blocks.Count - 1; i >= 0; i--)
             {
                 var block = _blocks[i];
-                if (    block.CachedTransform.position.x > _ball.CachedTransform.position.x
-                    && (block.CachedTransform.position - _ball.CachedTransform.position).magnitude > OldBlockPosThreshold
-                )
+                var blockWorldPos = block.CachedTransform.position;
+                var blockScreenPos = _cam.WorldToScreenPoint(blockWorldPos + new Vector3(1, 0, 1) * CloseToScreenEdgeUnitsThreshold);
+                if (blockScreenPos.y < 0)
                 {
                     block.Disappear();
                     _blocks.RemoveAt(i);

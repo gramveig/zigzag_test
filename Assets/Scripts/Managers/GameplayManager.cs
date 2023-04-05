@@ -1,4 +1,5 @@
 using System;
+using Alexey.ZigzagTest.Helpers;
 using Alexey.ZigzagTest.Views;
 using Alexey.ZigzagTest.Models;
 using Alexey.ZigzagTest.Views.UI;
@@ -27,7 +28,7 @@ namespace Alexey.ZigzagTest.Managers
         
         [SerializeField]
         private GameScreen _gameScreen;
-        
+
         [SerializeField]
         private float _speed = 0.2f;
 
@@ -37,6 +38,24 @@ namespace Alexey.ZigzagTest.Managers
         private async void Start()
         {
             await StartGame();
+        }
+
+        private void Update()
+        {
+            if (!_gameStarted)
+            {
+                return;
+            }
+
+            if (Input.anyKeyDown)
+            {
+                _ball.ChangeMovementDirection();
+            }
+
+            float shift = _speed * Time.deltaTime;
+            _road.Shift(shift);
+            _ball.Move(shift);
+            _camera.Follow(_ball.CachedTransform);
         }
 
         private async UniTask StartGame()
@@ -60,24 +79,6 @@ namespace Alexey.ZigzagTest.Managers
             _gameStarted = true;
             _startScreen.Hide();
             _gameScreen.Show();
-        }
-
-        private void Update()
-        {
-            if (!_gameStarted)
-            {
-                return;
-            }
-
-            if (Input.anyKeyDown)
-            {
-                _ball.ChangeMovementDirection();
-            }
-
-            float shift = _speed * Time.deltaTime;
-            _road.Shift(shift);
-            _ball.Move(shift);
-            _camera.Follow(_ball.CachedTransform);
         }
 
         private void OnCrystalPicked()
