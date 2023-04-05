@@ -446,7 +446,7 @@ PrefabInstance:
       objectReference: {fileID: 88798221}
     - target: {fileID: 6374403356411663784, guid: 5379e2582a771eb44912725658559d7e, type: 3}
       propertyPath: _autoPlay
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 6374403356411663784, guid: 5379e2582a771eb44912725658559d7e, type: 3}
       propertyPath: _gameScreen
