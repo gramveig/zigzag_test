@@ -11,8 +11,8 @@ namespace Alexey.ZigzagTest.Views
         [SerializeField]
         private float _fallSpeed = 1;
 
-        private float _shiftTotal;
         private bool _isFalling;
+        private ObjectPool<RoadBlock> _pool;
 
         private const float FallThreshold = -10;
         
@@ -35,7 +35,7 @@ namespace Alexey.ZigzagTest.Views
 
             if (p.y < FallThreshold)
             {
-                Destroy(gameObject);
+                ReturnToPool();
             }
         }
         
@@ -59,6 +59,11 @@ namespace Alexey.ZigzagTest.Views
             _crystal.Show(onPick);
         }
 
+        public void HideCrystal()
+        {
+            _crystal.Hide();
+        }
+
         public void SetColor(Color color)
         {
             var rdr = GetComponent<Renderer>();
@@ -67,8 +72,9 @@ namespace Alexey.ZigzagTest.Views
 
         public Transform CachedTransform => _transform;
         
-        public void Disappear()
+        public void Disappear(ObjectPool<RoadBlock> pool)
         {
+            _pool = pool;
             _isFalling = true;
         }
 
@@ -78,6 +84,13 @@ namespace Alexey.ZigzagTest.Views
             {
                 base.Shift(shift);
             }
+        }
+
+        public void ReturnToPool()
+        {
+            _isFalling = false;
+            HideCrystal();
+            _pool.Return(this);
         }
     }
 }

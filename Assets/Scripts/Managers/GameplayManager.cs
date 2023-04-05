@@ -50,7 +50,7 @@ namespace Alexey.ZigzagTest.Managers
                 return;
             }
 
-            if (Input.anyKeyDown)
+            if (Input.anyKeyDown && !_autoPlay)
             {
                 _ball.ChangeMovementDirection();
             }
@@ -148,10 +148,9 @@ namespace Alexey.ZigzagTest.Managers
         private void AutoPlay(float shift)
         {
             shiftTotal += shift;
-            
-            var ballPos = _ball.CachedTransform.position;
             if (shiftTotal >= 0.5f)
             {
+                var ballPos = _ball.CachedTransform.position;
                 int curBlockIdx = _road.GetBlockIdx(ballPos);
                 if (curBlockIdx == -1)
                 {
@@ -160,8 +159,8 @@ namespace Alexey.ZigzagTest.Managers
                     ballPos = _ball.CachedTransform.position;
                     curBlockIdx = _road.GetBlockIdx(ballPos);
                 }
-                
-                if (_road.IsTileForward(curBlockIdx))
+
+                if (_road.IsForwardTile(curBlockIdx))
                 {
                     _ball.SetMovementDirection(Ball.MovementDirection.Forward);
                 }

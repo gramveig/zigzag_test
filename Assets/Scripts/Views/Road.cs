@@ -26,6 +26,7 @@ namespace Alexey.ZigzagTest.Views
 
         public Action OnCristalPickedEvent { get; set; }
 
+        private ObjectPool<RoadBlock> _blockPool;
         private Transform _transform;
         private List<RoadBlock> _blocks = new();
         private float _shiftTotal;
@@ -70,8 +71,10 @@ namespace Alexey.ZigzagTest.Views
             {
                 _roadWidth = MaxRoadWidth;
             }
-            
+
             _transform = transform;
+
+            _blockPool = new ObjectPool<RoadBlock>(InstantiateRoadBlock);
         }
 
         public void GenerateHomeYard()
@@ -80,7 +83,7 @@ namespace Alexey.ZigzagTest.Views
             {
                 for (int y = -1; y <= 1; y++)
                 {
-                    InstantiateRoadBlock(x, y);
+                    InsertRoadBlockFromPool(x, y);
                 }
             }
         }
@@ -118,9 +121,9 @@ namespace Alexey.ZigzagTest.Views
 
         public void Clear()
         {
-            foreach (Transform t in _transform)
+            foreach (var block in _blocks)
             {
-                Destroy(t.gameObject);
+                _blockPool.Return(block);
             }
 
             _shiftTotal = 0;
@@ -131,40 +134,38 @@ namespace Alexey.ZigzagTest.Views
             _blocks.Clear();
         }
 
-        /// <summary>
-        /// Is tile with next index located forward
-        /// </summary>
-        public bool IsTileForward(int currentBlockIdx)
+        public bool IsForwardTile(int currentBlockIdx)
         {
             var currentBlock = _blocks[currentBlockIdx];
             return IsClosestForwardBlock(currentBlock);
         }
 
         /// <summary>
-        /// Get the index of a block under the ball
+        /// Get the index of a block under the ball.
+        /// Used in autoplay
         /// </summary>
         public int GetBlockIdx(Vector3 ballPos)
         {
             const float DistanceThreshold = 0.25f;
 
             ballPos -= new Vector3(0, ballPos.y, 0);
-            float[] magnitudes = new float[_blocks.Count];
             for (int i = 0; i < _blocks.Count; i++)
             {
                 var block = _blocks[i];
                 float m = (ballPos - block.CachedTransform.position).magnitude;
-                magnitudes[i] = m;
                 if (m < DistanceThreshold)
                 {
                     return i;
                 }
             }
 
+            //ball position is too far from the center of the block, needs aligning with the nearest block
             return -1;
         }
 
         /// <summary>
         /// Get the position of the block that is closest to the ball
+        /// Used in autoplay
         /// </summary>
         public Vector3 GetNearestBlockPos(Vector3 ballPos)
         {
@@ -182,16 +183,24 @@ namespace Alexey.ZigzagTest.Views
 
             return nearestBlock.CachedTransform.position;
         }
-        
-        private RoadBlock InstantiateRoadBlock(int x, int y)
+
+        private RoadBlock InstantiateRoadBlock()
         {
-            var roadBlock = Instantiate(_roadBlock, new Vector3(x, 0, y), Quaternion.identity, _transform);
+            var roadBlock = Instantiate(_roadBlock, _transform);
+            return roadBlock;
+        }
+        
+        private RoadBlock InsertRoadBlockFromPool(int x, int y)
+        {
+            var roadBlock = _blockPool.Draw();
+            
+            roadBlock.CachedTransform.position = new Vector3(x, 0, y);
             _blocks.Add(roadBlock);
 
             return roadBlock;
         }
 
-        private void InstantiateRoadBlockInCluster(int x, int y)
+        private void InsertRoadBlockFromPoolIntoCluster(int x, int y)
         {
             if (_blockIdxInCluster >= MaxBlocksInCluster)
             {
@@ -217,7 +226,7 @@ namespace Alexey.ZigzagTest.Views
                 }
             }
 
-            var roadBlock = InstantiateRoadBlock(x, y);
+            var roadBlock = InsertRoadBlockFromPool(x, y);
             if (_blockIdxInCluster == _crystalIdxInCluster)
             {
                 roadBlock.ShowCrystal(OnCristalPicked);
@@ -299,11 +308,11 @@ namespace Alexey.ZigzagTest.Views
             {
                 if (direction == RoadDirection.Forward)
                 {
-                    InstantiateRoadBlockInCluster(cornerTileCoord.x + i, cornerTileCoord.y - 1);
+                    InsertRoadBlockFromPoolIntoCluster(cornerTileCoord.x + i, cornerTileCoord.y - 1);
                 }
                 else if (direction == RoadDirection.Right)
                 {
-                    InstantiateRoadBlockInCluster(cornerTileCoord.x - 1, cornerTileCoord.y + i);
+                    InsertRoadBlockFromPoolIntoCluster(cornerTileCoord.x - 1, cornerTileCoord.y + i);
                 }
                 else
                 {
@@ -328,7 +337,7 @@ namespace Alexey.ZigzagTest.Views
                 var blockScreenPos = _cam.WorldToScreenPoint(blockWorldPos + new Vector3(1, 0, 1) * CloseToScreenEdgeUnitsThreshold);
                 if (blockScreenPos.y < 0)
                 {
-                    block.Disappear();
+                    block.Disappear(_blockPool);
                     _blocks.RemoveAt(i);
                 }
             }
