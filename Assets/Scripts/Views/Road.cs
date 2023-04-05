@@ -110,10 +110,8 @@ namespace Alexey.ZigzagTest.Views
             if (_shiftTotal > 1)
             {
                 _shiftTotal = 0;
-                if (IsNewBlockNeeded())
+                while (IsNewBlockNeeded())
                 {
-                    AddRowOfBlocks();
-                    AddRowOfBlocks();
                     AddRowOfBlocks();
                 }
             }
@@ -268,9 +266,9 @@ namespace Alexey.ZigzagTest.Views
 
         private bool IsNewBlockNeeded()
         {
-            var tc = GetRightmostTileCoord();
-            var p = new Vector3(tc.x, 0 ,tc.y);
-            return (p - _ball.CachedTransform.position).magnitude < NewBlockPosThreshold;
+            var lastBlockWorldPos = _blocks[^1].CachedTransform.position;
+            var lastBlockScreenPos = _cam.WorldToScreenPoint(lastBlockWorldPos + new Vector3(1, 0, 1) * CloseToScreenEdgeUnitsThreshold);
+            return lastBlockScreenPos.y < Screen.height;
         }
 
         private void DestroyBlocks()
