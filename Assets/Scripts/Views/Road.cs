@@ -17,9 +17,6 @@ namespace Alexey.ZigzagTest.Views
 
         [SerializeField]
         private int _roadWidth = 1;
-        
-        [SerializeField]
-        private Ball _ball;
 
         [SerializeField]
         private GameObject _sampleCube;
@@ -107,7 +104,7 @@ namespace Alexey.ZigzagTest.Views
             }
 
             //have to wait while the blocks are aligned with coordinate grid to add new blocks
-            if (_shiftTotal > 1)
+            if (_shiftTotal >= 1)
             {
                 _shiftTotal = 0;
                 while (IsNewBlockNeeded())
