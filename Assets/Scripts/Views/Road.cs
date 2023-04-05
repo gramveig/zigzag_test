@@ -39,7 +39,6 @@ namespace Alexey.ZigzagTest.Views
         private const int MaxBlocksInCluster = 5;
         private const int MaxRoadWidth = 3;
         private const int RoadBeginningLength = 20;
-        private const float NewBlockPosThreshold = 15;
         private const float CloseToScreenEdgeUnitsThreshold = 2;
 
         private readonly Color[] _blockColors = new[] { Color.white, Color.yellow, Color.red, Color.green, Color.cyan };
@@ -137,11 +136,8 @@ namespace Alexey.ZigzagTest.Views
         /// </summary>
         public bool IsTileForward(int currentBlockIdx)
         {
-            const float DistanceThreshold = -0.5f;
-
             var currentBlock = _blocks[currentBlockIdx];
-            var nextBlock = _blocks[currentBlockIdx + 1];
-            return nextBlock.CachedTransform.position.z - currentBlock.CachedTransform.position.z < DistanceThreshold;
+            return IsClosestForwardBlock(currentBlock);
         }
 
         /// <summary>
@@ -341,6 +337,29 @@ namespace Alexey.ZigzagTest.Views
         private void OnCristalPicked()
         {
             OnCristalPickedEvent?.Invoke();
+        }
+
+        private bool IsClosestForwardBlock(RoadBlock block)
+        {
+            const float SameCoordThreshold = 0.25f;
+            const float DifferentCoordThreshold = 0.5f;
+            
+            foreach (var b in _blocks)
+            {
+                if (b == block)
+                {
+                    continue;
+                }
+
+                var p1 = block.CachedTransform.position;
+                var p2 = b.CachedTransform.position;
+                if (Mathf.Abs(p1.x - p2.x) < SameCoordThreshold && p2.z - p1.z < -DifferentCoordThreshold)
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
     }
 }

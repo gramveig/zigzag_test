@@ -152,7 +152,6 @@ namespace Alexey.ZigzagTest.Managers
             var ballPos = _ball.CachedTransform.position;
             if (shiftTotal >= 0.5f)
             {
-
                 int curBlockIdx = _road.GetBlockIdx(ballPos);
                 if (curBlockIdx == -1)
                 {
