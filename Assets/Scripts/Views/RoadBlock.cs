@@ -47,6 +47,12 @@ namespace Alexey.ZigzagTest.Views
                 return new Vector2Int(Mathf.RoundToInt(p.x), Mathf.RoundToInt(p.z));
             }
         }
+        
+        public Vector2Int IntCoordWithShift(float shift)
+        {
+            var p = _transform.position;
+            return new Vector2Int(Mathf.RoundToInt(p.x + shift), Mathf.RoundToInt(p.z + shift));
+        }
 
         public void ShowCrystal(Action onPick)
         {

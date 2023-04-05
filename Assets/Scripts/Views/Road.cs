@@ -104,7 +104,7 @@ namespace Alexey.ZigzagTest.Views
             }
 
             //have to wait while the blocks are aligned with coordinate grid to add new blocks
-            if (_shiftTotal >= 1)
+            if (_shiftTotal >= 1f)
             {
                 _shiftTotal = 0;
                 while (IsNewBlockNeeded())
@@ -132,6 +132,61 @@ namespace Alexey.ZigzagTest.Views
             _blocks.Clear();
         }
 
+        /// <summary>
+        /// Is tile with next index located forward
+        /// </summary>
+        public bool IsTileForward(int currentBlockIdx)
+        {
+            const float DistanceThreshold = -0.5f;
+
+            var currentBlock = _blocks[currentBlockIdx];
+            var nextBlock = _blocks[currentBlockIdx + 1];
+            return nextBlock.CachedTransform.position.z - currentBlock.CachedTransform.position.z < DistanceThreshold;
+        }
+
+        /// <summary>
+        /// Get the index of a block under the ball
+        /// </summary>
+        public int GetBlockIdx(Vector3 ballPos)
+        {
+            const float DistanceThreshold = 0.25f;
+
+            ballPos -= new Vector3(0, ballPos.y, 0);
+            float[] magnitudes = new float[_blocks.Count];
+            for (int i = 0; i < _blocks.Count; i++)
+            {
+                var block = _blocks[i];
+                float m = (ballPos - block.CachedTransform.position).magnitude;
+                magnitudes[i] = m;
+                if (m < DistanceThreshold)
+                {
+                    return i;
+                }
+            }
+
+            return -1;
+        }
+
+        /// <summary>
+        /// Get the position of the block that is closest to the ball
+        /// </summary>
+        public Vector3 GetNearestBlockPos(Vector3 ballPos)
+        {
+            float minMagn = float.MaxValue;
+            RoadBlock nearestBlock = _blocks[0];
+            foreach (var block in _blocks)
+            {
+                float m = (ballPos - block.CachedTransform.position).magnitude;
+                if (m < minMagn)
+                {
+                    minMagn = m;
+                    nearestBlock = block;
+                }
+            }
+
+            return nearestBlock.CachedTransform.position;
+        }
+        
         private RoadBlock InstantiateRoadBlock(int x, int y)
         {
             var roadBlock = Instantiate(_roadBlock, new Vector3(x, 0, y), Quaternion.identity, _transform);

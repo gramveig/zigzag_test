@@ -9,7 +9,7 @@ namespace Alexey.ZigzagTest.Views
     {
         public Action OnFallDownEvent { get; set; }
 
-        private enum MovementDirection
+        public enum MovementDirection
         {
             Right,
             Forward
@@ -85,7 +85,21 @@ namespace Alexey.ZigzagTest.Views
             _movementDirection = GetDifferentDirection(_movementDirection);
         }
 
+        public void SetMovementDirection(MovementDirection direction)
+        {
+            if (_movementDirection == direction)
+            {
+                return;
+            }
+
+            _rigidBody.velocity = Vector3.zero;
+            _rigidBody.angularVelocity = Vector3.zero;
+            _movementDirection = direction;
+        }
+
         public Transform CachedTransform => _transform;
+
+        public MovementDirection Direction => _movementDirection;
 
         public void Show()
         {

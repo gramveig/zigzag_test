@@ -1,5 +1,4 @@
 using System;
-using Alexey.ZigzagTest.Helpers;
 using Alexey.ZigzagTest.Views;
 using Alexey.ZigzagTest.Models;
 using Alexey.ZigzagTest.Views.UI;
@@ -32,8 +31,12 @@ namespace Alexey.ZigzagTest.Managers
         [SerializeField]
         private float _speed = 0.2f;
 
+        [SerializeField]
+        private bool _autoPlay = false;
+        
         private bool _gameStarted;
         private GameModel _gameModel;
+        private float shiftTotal = 0;
 
         private async void Start()
         {
@@ -56,6 +59,10 @@ namespace Alexey.ZigzagTest.Managers
             _road.Shift(shift);
             _ball.Move(shift);
             _camera.Follow(_ball.CachedTransform);
+            if (_autoPlay)
+            {
+                AutoPlay(shift);
+            }
         }
 
         private async UniTask StartGame()
@@ -136,6 +143,36 @@ namespace Alexey.ZigzagTest.Managers
             _startScreen.Hide();
             _gameScreen.Show();
             _gameStarted = true;
+        }
+
+        private void AutoPlay(float shift)
+        {
+            shiftTotal += shift;
+            
+            var ballPos = _ball.CachedTransform.position;
+            if (shiftTotal >= 0.5f)
+            {
+
+                int curBlockIdx = _road.GetBlockIdx(ballPos);
+                if (curBlockIdx == -1)
+                {
+                    //align with nearest block when getting too far from the block's center
+                    _ball.CachedTransform.position = _road.GetNearestBlockPos(ballPos) + new Vector3(0, ballPos.y, 0);
+                    ballPos = _ball.CachedTransform.position;
+                    curBlockIdx = _road.GetBlockIdx(ballPos);
+                }
+                
+                if (_road.IsTileForward(curBlockIdx))
+                {
+                    _ball.SetMovementDirection(Ball.MovementDirection.Forward);
+                }
+                else
+                {
+                    _ball.SetMovementDirection(Ball.MovementDirection.Right);
+                }
+
+                shiftTotal = 0;
+            }
         }
     }
 }
