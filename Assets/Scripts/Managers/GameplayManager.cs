@@ -58,11 +58,15 @@ namespace Alexey.ZigzagTest.Managers
             float shift = _speed * Time.deltaTime;
             _road.Shift(shift);
             _ball.Move(shift);
-            _camera.Follow(_ball.CachedTransform);
             if (_autoPlay)
             {
                 AutoPlay(shift);
             }
+        }
+
+        private void LateUpdate()
+        {
+            _camera.Follow(_ball.CachedTransform);
         }
 
         private async UniTask StartGame()
